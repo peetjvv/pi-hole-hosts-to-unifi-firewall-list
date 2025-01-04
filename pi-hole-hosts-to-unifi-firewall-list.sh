@@ -30,11 +30,11 @@ fi
 # Read the hosts file
 DOMAINS=$(cat $TEMP_FILE)
 
-# Remove commented lines
-DOMAINS=$(echo "$DOMAINS" | grep -v '^#')
-
 # Remove empty lines
 DOMAINS=$(echo "$DOMAINS" | sed '/^$/d')
+
+# Remove everything before `# Custom host records are listed here.` line
+DOMAINS=$(echo "$DOMAINS" | sed '1,/# Custom host records are listed here./d')
 
 # Remove IP addresses within lines
 DOMAINS=$(echo "$DOMAINS" | sed 's/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*//g')
@@ -42,11 +42,17 @@ DOMAINS=$(echo "$DOMAINS" | sed 's/[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*//g')
 # Remove leading and trailing whitespace
 DOMAINS=$(echo "$DOMAINS" | sed 's/^[ \t]*//;s/[ \t]*$//')
 
+# Remove commented lines
+DOMAINS=$(echo "$DOMAINS" | grep -v '^#')
+
 # Sort alphabetically
 DOMAINS=$(echo "$DOMAINS" | sort)
 
 # Remove duplicates
 DOMAINS=$(echo "$DOMAINS" | uniq)
+
+# Remove empty lines
+DOMAINS=$(echo "$DOMAINS" | sed '/^$/d')
 
 # Output the domains
 echo "----------------------------------------"
